@@ -7,17 +7,18 @@ import axios from 'axios';
 const TodoList = () => {
   const [fetchedTodos, setFetchedTodos] = useState([]);
   const [loadingTodos, setLoadingTodos] = useState(true);
-  const [token, setToken] = useToken();
+  const {token, setToken} = useToken(); // eslint-disable-line
 
   useEffect(() => {
-    axios.get(`${process.env.BACKEND_URL}/todos`, {
-      headers: {
-        'authorization': token,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      }
-    })
-      .then(async (response) => {
+    axios
+      .get(`${process.env.BACKEND_URL}/todos`, {
+        headers: {
+          authorization: token,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      })
+      .then(async response => {
         const data = await response.json();
 
         if (!response.ok) {
@@ -28,17 +29,14 @@ const TodoList = () => {
 
         setFetchedTodos(data);
         setLoadingTodos(false);
-      })
+      });
   });
 
   return (
-      <>
-        <AddTodoForm />
-        <TodoList
-          fetchedTodos={fetchedTodos}
-          loadingTodos={loadingTodos}
-        />
-      </>
+    <>
+      <AddTodoForm />
+      <TodoList fetchedTodos={fetchedTodos} loadingTodos={loadingTodos} />
+    </>
   );
 }
 

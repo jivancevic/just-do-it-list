@@ -1,8 +1,9 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, useState} from 'react';
 import {Delete, Build} from '@material-ui/icons';
 import {Grid, Paper} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import {CSSTransition} from 'react-transition-group';
+import axios from 'axios';
 
 const styles = {
   Icon: {
@@ -18,37 +19,48 @@ const styles = {
   },
 };
 
-class Todo extends Component {
-  state = {
-    fade: false,
-  };
+const handleDeletion = async (id, token) => {
+  new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve(true);
+    }, 500);
+  })
+  .then(() => {
+    axios
+    .delete(`${process.env.BACKEND_URL}/todos/${id}`, {
+      headers: {
+        'authorization': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    })
+    .then(async response => {
+      const data = await response.json();
 
-  gridRef = React.createRef();
+      if (!response.ok) {
+        const error = (data && data.message) || response.status;
+        alert(error);
+        return Promise.reject(error);
+      }
 
-  deleteTodo = () => {
-    const fade = true;
-    this.setState({fade});
-
-    var promise = new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        resolve(true);
-      }, 500);
+      setFetchedTodos(data);
+      setLoadingTodos(false);
     });
+  }
+}
 
-    promise.then(() => this.props.deleteTodo(this.props.index));
-    console.log(this.state);
-  };
+const Todo = (id) => {
+  const [fade, setFade] = useState(false);
+  const [token, setToken] = useToken();
 
-  render() {
-    const gridClass = this.state.fade ? 'fade-out' : '';
+  const gridClass = fade ? 'fade-out' : '';
 
-    return (
+  return(
       <Grid
         xs={12}
         className={`${gridClass}`}
         item
-        key={this.props.index}
-        ref={this.gridRef}
+        key={id}
       >
         <Paper elevation={2} style={styles.Paper}>
           <span style={styles.Todo}>{this.props.todo}</span>
@@ -56,21 +68,22 @@ class Todo extends Component {
             color="primary"
             aria-label="Edit"
             style={styles.Icon}
-            onClick={() => this.props.updateTodo(this.props.index)}
+            onClick={() => updateTodo(id)}
           >
-            <Build fontSize="small" />
+          <Build fontSize="small" />
           </IconButton>
           <IconButton
             color="secondary"
             aria-label="Delete"
-            onClick={this.deleteTodo}
+            onClick={handleDeletion(
+              id, token
+            )}
           >
             <Delete fontSize="small" />
           </IconButton>
         </Paper>
       </Grid>
-    );
-  }
-}
+  );
+};
 
 export default Todo;
