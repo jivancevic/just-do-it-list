@@ -1,20 +1,14 @@
 import React, {useReducer} from 'react';
-import {Link as Redirect} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
-import {ToastContainer, toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -37,23 +31,29 @@ const useStyles = makeStyles(theme => ({
 }));
 
 async function loginUser(credentials) {
+  console.log(credentials.formInput);
   return fetch('http://localhost:3000/users/login', {
     method: 'POST',
-    body: JSON.stringify(credentials),
+    body: JSON.stringify(credentials.formInput),
     headers: {
       'Content-Type': 'application/json',
+      'accept': 'application/json',
     },
-  })
-    .then(response => response.json());
+  }).then(response => {
+    console.log(response.status);
+    if (response.status == 200) return response.json();
+    else return undefined;
+  });
 }
 
 export default function SignIn({setToken}) {
   const classes = useStyles();
+  const history = useHistory();
 
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({...state, ...newState}),
     {
-      username: '',
+      email: '',
       password: '',
     },
   );
@@ -64,7 +64,13 @@ export default function SignIn({setToken}) {
     const token = await loginUser({
       formInput,
     });
-    if (token !== undefined) setToken(token);
+    if (token === undefined) {
+      alert("Email or password incorrect.");
+      history.push('/login');
+    } else {
+      setToken(token);
+      history.push('/');
+    }
   };
 
   const handleInput = evt => {
@@ -86,10 +92,10 @@ export default function SignIn({setToken}) {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
+            id="email"
+            label="Email address"
+            name="email"
+            autoComplete="email"
             autoFocus
             onChange={handleInput}
           />

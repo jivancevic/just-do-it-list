@@ -26,16 +26,21 @@ export class NewUserRequest extends User {
     type: 'string',
     required: true,
   })
+  email: string;
+  @property({
+    type: 'string',
+    required: true,
+  })
   password: string;
 }
 
 const CredentialsSchema: SchemaObject = {
   type: 'object',
-  required: ['username', 'password'],
+  required: ['email', 'password'],
   properties: {
-    username: {
+    email: {
       type: 'string',
-      minLength: 4,
+      format: 'email',
     },
     password: {
       type: 'string',

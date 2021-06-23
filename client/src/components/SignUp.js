@@ -39,12 +39,14 @@ async function signUpUser(credentials) {
   console.log(JSON.stringify(credentials.formInput));
   return fetch('http://localhost:3000/signup', {
     method: 'POST',
-    body: JSON.stringify(credentials),
-    headers: {
+    body: JSON.stringify(credentials.formInput),
+    headers: new Headers({
       'Content-Type': 'application/json',
-    },
+      'accept': 'application/json',
+    }),
   })
-    .then(response => response.json());
+    .then(response => response.status)
+    .catch(err => console.log(err));
 }
 
 export default function SignUp({setToken}) {
@@ -54,7 +56,7 @@ export default function SignUp({setToken}) {
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({...state, ...newState}),
     {
-      username: '',
+      email: '',
       password: '',
     },
   );
@@ -62,14 +64,21 @@ export default function SignUp({setToken}) {
   const handleSubmit = async evt => {
     evt.preventDefault();
 
-    const token = await signUpUser({
+    const status = await signUpUser({
       formInput,
     });
-    console.log(`token = ${token}`);
-    if (token !== undefined) {
-      setToken(token);
-      history.push("/");
+    if (status == 200) {
+      alert("Successfully signed up. Please proceed to sign in.");
+      history.push('/');
+    } else {
+      alert("Something went wrong.");
     }
+  };
+
+  const handleInput = evt => {
+    const name = evt.target.name;
+    const newValue = evt.target.value;
+    setFormInput({[name]: newValue});
   };
 
   return (
@@ -81,15 +90,39 @@ export default function SignUp({setToken}) {
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="lname"
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                autoComplete="username"
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                onChange={handleInput}
               />
             </Grid>
             <Grid item xs={12}>
@@ -102,6 +135,7 @@ export default function SignUp({setToken}) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={handleInput}
               />
             </Grid>
           </Grid>
