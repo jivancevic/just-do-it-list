@@ -1,4 +1,5 @@
 import React, {Component, Fragment, useState} from 'react';
+import useToken from '../hooks/useToken';
 import {Delete, Build} from '@material-ui/icons';
 import {Grid, Paper} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,7 +20,7 @@ const styles = {
   },
 };
 
-const handleDeletion = async (id, token) => {
+const deleteTodo = async (id, token) => {
   new Promise(function (resolve, reject) {
     setTimeout(function () {
       resolve(true);
@@ -43,46 +44,41 @@ const handleDeletion = async (id, token) => {
         return Promise.reject(error);
       }
 
-      setFetchedTodos(data);
-      setLoadingTodos(false);
+      return data;
     });
-  }
+  });
 }
 
-const Todo = (id) => {
+const updateTodo = (todo) => {
+  todo.status = 'editing';
+}
+
+const Todo = (key, todo, token) => {
   const [fade, setFade] = useState(false);
-  const [token, setToken] = useToken();
 
   const gridClass = fade ? 'fade-out' : '';
 
-  return(
-      <Grid
-        xs={12}
-        className={`${gridClass}`}
-        item
-        key={id}
-      >
-        <Paper elevation={2} style={styles.Paper}>
-          <span style={styles.Todo}>{this.props.todo}</span>
-          <IconButton
-            color="primary"
-            aria-label="Edit"
-            style={styles.Icon}
-            onClick={() => updateTodo(id)}
-          >
+  return (
+    <Grid xs={12} className={`${gridClass}`} item key={key}>
+      <Paper elevation={2} style={styles.Paper}>
+        <span style={styles.Todo}>{this.props.todo}</span>
+        <IconButton
+          color="primary"
+          aria-label="Edit"
+          style={styles.Icon}
+          onClick={() => updateTodo(todo)}
+        >
           <Build fontSize="small" />
-          </IconButton>
-          <IconButton
-            color="secondary"
-            aria-label="Delete"
-            onClick={handleDeletion(
-              id, token
-            )}
-          >
-            <Delete fontSize="small" />
-          </IconButton>
-        </Paper>
-      </Grid>
+        </IconButton>
+        <IconButton
+          color="secondary"
+          aria-label="Delete"
+          onClick={deleteTodo(todo.id, token)}
+        >
+          <Delete fontSize="small" />
+        </IconButton>
+      </Paper>
+    </Grid>
   );
 };
 

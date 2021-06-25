@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {Save, Delete} from '@material-ui/icons';
 import {Grid, Paper} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
+import axios from 'axios';
 
 const styles = {
   Icon: {
@@ -18,39 +19,54 @@ const styles = {
   },
 };
 
-class EditTodo extends Component {
-  inputRef = React.createRef();
-  render() {
-    return (
-      <Grid xs={12} item key={this.props.index}>
-        <Paper elevation={2} style={styles.Paper}>
-          <form
-            onSubmit={() => {
-              this.props.saveTodo(
-                this.props.index,
-                this.inputRef.current.value,
-              );
-            }}
-            style={{display: 'flex'}}
-          >
-            <Input
-              style={{width: '90%'}}
-              defaultValue={this.props.todo}
-              inputRef={this.inputRef}
-            />
-            <IconButton
-              type="submit"
-              color="primary"
-              aria-label="Add"
-              style={styles.Icon}
-            >
-              <Save fontSize="small" />
-            </IconButton>
-          </form>
-        </Paper>
-      </Grid>
-    );
+const saveTodo = async (input, id, token) => {
+  if (input.length < 1) {
+    alert('Todo field cannot be empty.');
+    return;
   }
+
+  axios.patch(`${process.env.BACKEND_URL}/todos/${id}`, JSON.stringify(input), {
+    headers: {
+      authorization: token,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+};
+
+const EditTodo = (key, todo, token) => {
+  const [input, setInput] = useState(todo.title);
+
+  const handleInput = evt => {
+    setInput(evt.target.value);
+  };
+
+  return (
+    <Grid xs={12} item key={key}>
+      <Paper elevation={2} style={styles.Paper}>
+        <form
+          onSubmit={() => {
+            this.props.saveTodo(input, todo.id, token);
+          }}
+          style={{display: 'flex'}}
+        >
+          <Input
+            style={{width: '90%'}}
+            defaultValue={todo.title}
+            onChange={handleInput}
+          />
+          <IconButton
+            type="submit"
+            color="primary"
+            aria-label="Add"
+            style={styles.Icon}
+          >
+            <Save fontSize="small" />
+          </IconButton>
+        </form>
+      </Paper>
+    </Grid>
+  );
 }
 
 export default EditTodo;

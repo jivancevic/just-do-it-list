@@ -41,7 +41,7 @@ async function loginUser(credentials) {
     },
   }).then(response => {
     console.log(response.status);
-    if (response.status == 200) return response.json();
+    if (response.status === 200) return response.json();
     else return undefined;
   });
 }

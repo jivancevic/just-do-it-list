@@ -1,13 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import useToken from '../hooks/useToken';
 import AddTodoForm from './AddTodoForm';
 
 import axios from 'axios';
 
-const TodoList = () => {
+const TodoList = (token) => {
   const [fetchedTodos, setFetchedTodos] = useState([]);
   const [loadingTodos, setLoadingTodos] = useState(true);
-  const {token, setToken} = useToken(); // eslint-disable-line
 
   useEffect(() => {
     axios
@@ -27,6 +25,10 @@ const TodoList = () => {
           return Promise.reject(error);
         }
 
+        data.map((todo) => (
+          todo.status = 'normal'
+        ))
+
         setFetchedTodos(data);
         setLoadingTodos(false);
       });
@@ -35,7 +37,7 @@ const TodoList = () => {
   return (
     <>
       <AddTodoForm />
-      <TodoList fetchedTodos={fetchedTodos} loadingTodos={loadingTodos} />
+      <TodoList fetchedTodos={fetchedTodos} loadingTodos={loadingTodos} token={token} />
     </>
   );
 }

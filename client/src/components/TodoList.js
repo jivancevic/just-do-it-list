@@ -3,33 +3,22 @@ import Todo from './Todo';
 import EditTodo from './EditTodo';
 import {Grid, CircularProgress} from '@material-ui/core';
 
-const TodoList = ({fetchedTodos, loadingTodos}) => {
+const TodoList = ({fetchedTodos, loadingTodos, token}) => {
   return (
     <Grid container>
       {loadingTodos ? (
         <CircularProgress />
       ) : (
-        fetchedTodos.map((todo) => (
-          {todo['status'] === 'editing' ? (
-            <EditTodo
-          key={key}
-          index={key}
-          todo={this.props.list[key]['todo']}
-          saveTodo={this.props.saveTodo}
-        />
+        fetchedTodos.map(todo =>
+          todo.status === 'editing' ? (
+            <EditTodo key={todo.id} todo={todo} token={token} />
           ) : (
-            <Todo
-          key={key}
-          index={key}
-          todo={this.props.list[key]['todo']}
-          deleteTodo={this.props.deleteTodo}
-          updateTodo={this.props.updateTodo}
-        />
-          )}
-        ))
+            <Todo key={todo.id} todo={todo} token={token} />
+          ),
+        )
       )}
     </Grid>
   );
-}
+};
 
 export default TodoList;

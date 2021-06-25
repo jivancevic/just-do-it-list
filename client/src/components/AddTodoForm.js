@@ -6,7 +6,8 @@ import axios from 'axios';
 
 const addTodo = async (todo, token) => {
   if (todo.length < 1) {
-
+    alert('Todo field cannot be empty.');
+    return;
   }
 
   axios.post(`${process.env.BACKEND_URL}/todos`, {
@@ -25,10 +26,7 @@ const AddTodoForm = () => {
   const handleSubmit = async evt => {
     evt.preventDefault();
 
-    const todo = await addTodo(formInput, token);
-    if (todo === undefined) {
-      alert("Todo field cannot be empty.");
-    }
+    await addTodo(formInput, token);
   };
 
   const handleInput = evt => {

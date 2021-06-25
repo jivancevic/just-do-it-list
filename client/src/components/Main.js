@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import TodoPage from './TodoPage';
 import SignIn from './SignIn';
@@ -12,7 +12,7 @@ const Main = () => {
     <main>
       <Switch>
         <Route exact path="/">
-          {token !== undefined ? <TodoPage /> : <Redirect to="/login" />}
+          {token !== undefined ? <TodoPage token={token}/> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/login">
           <SignIn setToken={setToken} />
