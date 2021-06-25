@@ -1,17 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import AddTodoForm from './AddTodoForm';
+import useToken from "../hooks/useToken";
 
 import axios from 'axios';
 
-const TodoList = (token) => {
+const TodoList = () => {
   const [fetchedTodos, setFetchedTodos] = useState([]);
   const [loadingTodos, setLoadingTodos] = useState(true);
+  const {token, setToken} = useToken();
 
   useEffect(() => {
-    axios
+    const fetchData = async () => {
+      const result =  await axios
       .get(`${process.env.BACKEND_URL}/todos`, {
         headers: {
-          authorization: token,
+          authorization: `${token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -25,19 +28,24 @@ const TodoList = (token) => {
           return Promise.reject(error);
         }
 
-        data.map((todo) => (
-          todo.status = 'normal'
-        ))
+        //data.map(todo => (todo.status = 'normal'));
+
+        console.log(data);
 
         setFetchedTodos(data);
         setLoadingTodos(false);
+
+        return data;
       });
-  });
+    }
+
+    fetchData();
+  }, [token]);
 
   return (
     <>
       <AddTodoForm />
-      <TodoList fetchedTodos={fetchedTodos} loadingTodos={loadingTodos} token={token} />
+      <TodoList fetchedTodos={fetchedTodos} loadingTodos={loadingTodos} />
     </>
   );
 }

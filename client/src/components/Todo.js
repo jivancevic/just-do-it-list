@@ -21,18 +21,20 @@ const styles = {
 };
 
 const deleteTodo = async (id, token) => {
-  new Promise(function (resolve, reject) {
+  /*new Promise(function (resolve, reject) {
     setTimeout(function () {
       resolve(true);
     }, 500);
   })
-  .then(() => {
+  .then(() => {*/
+
+
     axios
     .delete(`${process.env.BACKEND_URL}/todos/${id}`, {
       headers: {
         'authorization': token,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'content-type': 'application/json',
+        'accept': 'application/json',
       },
     })
     .then(async response => {
@@ -46,7 +48,6 @@ const deleteTodo = async (id, token) => {
 
       return data;
     });
-  });
 }
 
 const updateTodo = (todo) => {

@@ -12,7 +12,7 @@ const Main = () => {
     <main>
       <Switch>
         <Route exact path="/">
-          {token !== undefined ? <TodoPage token={token}/> : <Redirect to="/login" />}
+          {token !== undefined ? <TodoPage/> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/login">
           <SignIn setToken={setToken} />

@@ -1,27 +1,36 @@
-import React, {useState} from 'react';
-import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import useToken from '../hooks/useToken';
+import Input from '@material-ui/core/Input';
 import axios from 'axios';
+import React, {useState} from 'react';
+import useToken from '../hooks/useToken';
 
-const addTodo = async (todo, token) => {
-  if (todo.length < 1) {
+const addTodo = async (input, token) => {
+  if (input.length < 1) {
     alert('Todo field cannot be empty.');
     return;
   }
 
-  axios.post(`${process.env.BACKEND_URL}/todos`, {
+  const options = {
     headers: {
-      'authorization': token,
+      'authorization': `${token}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    },
-  });
+    }
+  };
+
+  axios.post(
+    `${process.env.BACKEND_URL}/todos`,
+    JSON.stringify({
+      title: input,
+      desc: '',
+      isComplete: false,
+    }), options
+  );
 };
 
 const AddTodoForm = () => {
   const [formInput, setFormInput] = useState('');
-  const [token, setToken] = useToken();
+  const [token] = useToken();
 
   const handleSubmit = async evt => {
     evt.preventDefault();
